@@ -1,0 +1,159 @@
+ Spring Boot 启动加载数据 CommandLineRunner
+标签： spring
+2016-01-12 09:24 31885人阅读 评论(10) 收藏 举报
+ 分类： Spring（42）  
+版权声明：本文为博主原创文章，未经博主允许不得转载。
+实际应用中，我们会有在项目服务启动的时候就去加载一些数据或做一些事情这样的需求。 
+为了解决这样的问题，Spring Boot 为我们提供了一个方法，通过实现接口 CommandLineRunner 来实现。
+
+很简单，只需要一个类就可以，无需其他配置。 
+创建实现接口 CommandLineRunner 的类
+
+package org.springboot.sample.runner;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+/**
+ * 服务启动执行
+ *
+ * @author   单红宇(365384722)
+ * @myblog  http://blog.csdn.net/catoop/
+ * @create    2016年1月9日
+ */
+@Component
+public class MyStartupRunner1 implements CommandLineRunner {
+
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println(">>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作<<<<<<<<<<<<<");
+    }
+
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+Spring Boot应用程序在启动后，会遍历CommandLineRunner接口的实例并运行它们的run方法。也可以利用@Order注解（或者实现Order接口）来规定所有CommandLineRunner实例的运行顺序。
+
+如下我们使用@Order 注解来定义执行顺序。
+
+package org.springboot.sample.runner;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+/**
+ * 服务启动执行
+ *
+ * @author   单红宇(365384722)
+ * @myblog  http://blog.csdn.net/catoop/
+ * @create    2016年1月9日
+ */
+@Component
+@Order(value=2)
+public class MyStartupRunner1 implements CommandLineRunner {
+
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println(">>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作 11111111 <<<<<<<<<<<<<");
+    }
+
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+package org.springboot.sample.runner;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+/**
+ * 服务启动执行
+ *
+ * @author   单红宇(365384722)
+ * @myblog  http://blog.csdn.net/catoop/
+ * @create    2016年1月9日
+ */
+@Component
+@Order(value=1)
+public class MyStartupRunner2 implements CommandLineRunner {
+
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println(">>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作 22222222 <<<<<<<<<<<<<");
+    }
+
+}
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+启动程序后，控制台输出结果为：
+
+>>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作 22222222 <<<<<<<<<<<<<
+>>>>>>>>>>>>>>>服务启动执行，执行加载数据等操作 11111111 <<<<<<<<<<<<<
+1
+2
+
+根据控制台结果可判断，@Order 注解的执行优先级是按value值从小到大顺序。
